@@ -7,39 +7,32 @@ import {
     JoinColumn,
     ManyToOne,
     OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
     Unique,
     UpdateDateColumn,
   } from 'typeorm';
   import { User } from 'src/user/entities/user.entity';
   import {Category} from '../types/category.type'
-import { Schedule } from './schedule.entity';
+import { Show } from './show.entity';
+import { Seat } from './seat.entity';
 
   @Entity({
-    name: 'shows',
+    name: 'schedules',
   })
 
-  export class Show {
+  export class Schedule {
     @PrimaryGeneratedColumn({unsigned:true})
     id: number;
   
-    @Column({unique:true})
-    title: string;
-  
-    @Column({ type: 'text'})
-    description: string;
-  
-    @Column({ type: 'enum', enum: Category})
-    category: Category;
+    @Column({unsigned:true})
+    showId: number;
 
-    @Column()
-    place: string;
+    @Column({type:'date'})
+    date: Date;
 
-    @Column()
-    price: number;
-
-    @Column()
-    thumbnail: string;
+    @Column({type:'time'})
+    time: string;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -50,7 +43,10 @@ import { Schedule } from './schedule.entity';
     @DeleteDateColumn()
     deletedAt?: Date;
 
-    @OneToMany((type): typeof Schedule => Schedule, schedule => schedule.show, {cascade:true})
-    schedules: Schedule[];
+    @ManyToOne((type): typeof Show => Show, show => show.schedules, {onDelete:'CASCADE'})
+    show: Show;
+
+    @OneToOne((type): typeof Seat => Seat, seat => seat.schedule)
+    seat: Seat;
   }
   

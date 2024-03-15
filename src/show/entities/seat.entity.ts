@@ -7,6 +7,7 @@ import {
     JoinColumn,
     ManyToOne,
     OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
     Unique,
     UpdateDateColumn,
@@ -16,30 +17,21 @@ import {
 import { Schedule } from './schedule.entity';
 
   @Entity({
-    name: 'shows',
+    name: 'seats',
   })
 
-  export class Show {
+  export class Seat {
     @PrimaryGeneratedColumn({unsigned:true})
     id: number;
   
-    @Column({unique:true})
-    title: string;
-  
-    @Column({ type: 'text'})
-    description: string;
-  
-    @Column({ type: 'enum', enum: Category})
-    category: Category;
+    @Column({unsigned:true})
+    scheduleId: number;
 
-    @Column()
-    place: string;
+    @Column({unsigned:true}) //0아래로 내려갈 수 있으니까
+    availableSeats: number;
 
-    @Column()
-    price: number;
-
-    @Column()
-    thumbnail: string;
+    @Column({unsigned:true})
+    totleSeats: number;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -50,7 +42,8 @@ import { Schedule } from './schedule.entity';
     @DeleteDateColumn()
     deletedAt?: Date;
 
-    @OneToMany((type): typeof Schedule => Schedule, schedule => schedule.show, {cascade:true})
-    schedules: Schedule[];
+    @OneToOne((type): typeof Schedule => Schedule, schedule => schedule.seat)
+    @JoinColumn() //OneToOne 에서 끌려가는쪽에 joincolumn 넣어줌
+    schedule: Schedule;
   }
   

@@ -8,20 +8,20 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { CreatePostDto } from './dto/create-reservation.dto';
-import { RemovePostDTO } from './dto/remove-reservation.dto';
-import { UpdatePostDto } from './dto/update-reservation.dto';
-import { Post } from './entities/post.entity';
+import { CreateReservationDto } from './dto/create-reservation.dto';
+import { RemoveReservationDTO } from './dto/remove-reservation.dto';
+import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { Reservation } from './entities/reservation.entity';
 
 @Injectable()
-export class PostService {
+export class ReservationService {
   constructor(
-    @InjectRepository(Post) private postRepository: Repository<Post>,
+    @InjectRepository(Reservation) private reservationRepository: Repository<Reservation>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async create(createPostDto: CreatePostDto) {
-    return (await this.postRepository.save(createPostDto)).id;
+  async create(createreservationDto: CreateReservationDto) {
+    return (await this.reservationRepository.save(createreservationDto)).id;
   }
 
   async findAll() {
@@ -30,7 +30,7 @@ export class PostService {
       return cachedArticles;
     }
 
-    const articles = await this.postRepository.find({
+    const articles = await this.reservationRepository.find({
       where: { deletedAt: null },
       select: ['id', 'title', 'updatedAt'],
     });
@@ -43,54 +43,54 @@ export class PostService {
       throw new BadRequestException('게시물 ID가 잘못되었습니다.');
     }
 
-    return await this.postRepository.findOne({
+    return await this.reservationRepository.findOne({
       where: { id, deletedAt: null },
       select: ['title', 'content', 'updatedAt'],
     });
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto) {
+  async update(id: number, updateReservationDto: UpdateReservationDto) {
     if (_.isNaN(id)) {
       throw new BadRequestException('게시물 ID가 잘못되었습니다.');
     }
 
-    const { content, password } = updatePostDto;
-    const post = await this.postRepository.findOne({
+    const { content, password } = updateReservationDto;
+    const reservation = await this.reservationRepository.findOne({
       select: ['password'],
       where: { id },
     });
 
-    if (_.isNil(post)) {
+    if (_.isNil(reservation)) {
       throw new NotFoundException('게시물을 찾을 수 없습니다.');
     }
 
-    if (!_.isNil(post.password) && post.password !== password) {
+    if (!_.isNil(reservation.password) && reservation.password !== password) {
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
     }
 
-    await this.postRepository.update({ id }, { content });
+    await this.reservationRepository.update({ id }, { content });
   }
 
-  async remove(id: number, removePostDto: RemovePostDTO) {
+  async remove(id: number, removeReservationDto: RemoveReservationDTO) {
     if (_.isNaN(id)) {
       throw new BadRequestException('게시물 ID가 잘못되었습니다.');
     }
 
-    const { password } = removePostDto;
+    const { password } = removeReservationDto;
 
-    const post = await this.postRepository.findOne({
+    const reservation = await this.reservationRepository.findOne({
       select: ['password'],
       where: { id },
     });
 
-    if (_.isNil(post)) {
+    if (_.isNil(reservation)) {
       throw new NotFoundException('게시물을 찾을 수 없습니다.');
     }
 
-    if (!_.isNil(post.password) && post.password !== password) {
+    if (!_.isNil(reservation.password) && reservation.password !== password) {
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
     }
 
-    await this.postRepository.softDelete({ id });
+    await this.reservationRepository.softDelete({ id });
   }
 }

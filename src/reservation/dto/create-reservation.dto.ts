@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreatePostDto {
+export class CreateReservationDto {
   @IsString()       // DTO 를 구성하는 각각의 데이터 필드의 타입 정의
   @IsNotEmpty({ message: '게시물의 제목을 입력해주세요.' })
   readonly title: string;

@@ -1,5 +1,5 @@
 import { PickType } from '@nestjs/mapped-types';
 
-import { CreatePostDto } from './create-reservation.dto';
+import { CreateReservationDto } from './create-reservation.dto';
 
-export class RemovePostDTO extends PickType(CreatePostDto, ['password']) {}
+export class RemoveReservationDTO extends PickType(CreateReservationDto, ['password']) {}
